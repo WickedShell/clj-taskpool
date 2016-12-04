@@ -1,5 +1,7 @@
 # clj-taskpool
 
+[![Build Status](https://semaphoreci.com/api/v1/wickedshell/clj-taskpool/branches/master/badge.svg)](https://semaphoreci.com/wickedshell/clj-taskpool)
+
 A Clojure library designed to create a simple to use task pool. The level of parallelism specified at the creation of the pool controls how many threads are used to process tasks.
 
 ## Installation
