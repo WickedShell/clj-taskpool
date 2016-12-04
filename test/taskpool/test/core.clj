@@ -90,3 +90,12 @@
       (Thread/sleep 500) ; give the task a chance to be run
       (is (= (count @(:tasks-pending pool)) 1)) ; the test task should still be pending
       (is (not (realized? test-promise)))))) ; still shouldn't have realized the test
+
+(deftest test-multiple-tasks
+  (testing "Tests adding a set of tasks to the pool"
+    (let [pool (create-pool "test-pool-task" 5)
+          run-tasks (atom 0)]
+      (add-task pool (into #{} (for [i (range 0 10)] (fn [] (swap! run-tasks inc)))))
+      ; allow the tasks to all run
+      (Thread/sleep 500)
+      (is (= @run-tasks 10)))))

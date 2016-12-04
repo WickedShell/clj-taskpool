@@ -1,5 +1,6 @@
 (ns taskpool.taskpool
-    (:require [clojure.core.async :as async])
+    (:require [clojure.core.async :as async]
+              [clojure.set :as set])
     (:import [java.util.concurrent.locks Condition ReentrantLock]))
 
 (defn- take-work
@@ -42,15 +43,17 @@
       :tasks-pending pool})))
 
 (defn add-task
-  "Adds a task to be run in the task pool.
+  "Adds a task or a set of tasks to be run in the task pool.
   Task run order is not guaranteed, duplicates of a task already pending will not be added."
   [task-pool task]
   (let [{:keys [^ReentrantLock lock ^Condition condition running tasks-pending]} task-pool]
     (if @running
       (do
         (.lock lock)
-        (swap! tasks-pending conj task)
-        (.signal condition)
+        (if (set? task)
+          (swap! tasks-pending set/union task)
+          (swap! tasks-pending conj task))
+        (.signalAll condition)
         (.unlock lock))
       (throw (ex-info
                "Attempted to add a task to a pool which has been terminated" 
