@@ -62,6 +62,28 @@ my-pool-3 finished 9
 
 Notice that tasks are run as soon as they are submitted, you don't need to prompt the pool to check for any new tasks.
 
+Rather then submitting tasks one at a time, a `set` of additional tasks can be added instead.
+
+### Data processing
+
+A pool can also be made that will always run the same function over the provided tasks. (Basically `pmap` but for a user controllable number of threads, that allows adding more tasks to the pool later)
+
+```
+=> (def worker-pool (create-worker-pool "my-worker-pool" 5 #(println (str (.getName (Thread/currentThread)) " finished " %))))
+=> (add-task worker-pool (into #{} (range 10)))
+my-worker-pool-0 finished 0
+my-worker-pool-2 finished 1
+my-worker-pool-1 finished 7
+my-worker-pool-1 finished 2
+my-worker-pool-1 finished 9
+my-worker-pool-1 finished 5
+my-worker-pool-1 finished 8
+my-worker-pool-3 finished 4
+my-worker-pool-4 finished 6
+my-worker-pool-0 finished 3
+
+```
+
 ### Remove pending tasks
 
 Tasks that haven't been started can be removed from the pool. To remove a single task call `remove-pending-task` with your task pool and the task to be removed. It will return a boolean for if it succeeded in removing the task from the pool without running the task.

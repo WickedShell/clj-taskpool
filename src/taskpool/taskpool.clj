@@ -20,10 +20,10 @@
     (or @work
         (recur)))))
 
-(defn create-pool
-  "Creates a new task pool, with the specified level of parallelism"
-  ([parallelism] (create-pool (gensym "taskpool") parallelism))
-  ([pool-name parallelism]
+(defn create-worker-pool
+  "Creates a pool of workers that run the provided function on any pending tasks"
+  ([parallelism f] (create-worker-pool (gensym "taskpool") parallelism f))
+  ([pool-name parallelism f]
    (let [lock (new ReentrantLock)
          condition (.newCondition lock)
          pool (atom #{})]
@@ -32,7 +32,7 @@
               (.setName (Thread/currentThread) (format "%s-%d" pool-name i))
               (try
                 (loop []
-                      ((take-work lock condition pool))
+                      (f (take-work lock condition pool))
                       (recur))
                 (catch InterruptedException e))))
      {:condition condition
@@ -41,6 +41,12 @@
       :name pool-name
       :running (atom true)
       :tasks-pending pool})))
+
+(defn create-pool
+  "Creates a new task pool, with the specified level of parallelism"
+  ([parallelism] (create-pool (gensym "taskpool") parallelism))
+  ([pool-name parallelism]
+   (create-worker-pool pool-name parallelism (fn [task] (task)))))
 
 (defn add-task
   "Adds a task or a set of tasks to be run in the task pool.

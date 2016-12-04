@@ -99,3 +99,12 @@
       ; allow the tasks to all run
       (Thread/sleep 500)
       (is (= @run-tasks 10)))))
+
+(deftest test-worker-pools
+  (testing "Tests that passing data as an argument to a common function"
+    (let [running-total (atom 0)
+          pool (create-worker-pool 2 #(swap! running-total + %))]
+      (add-task pool (into #{} (for [i (range 0 10)] i)))
+      ; allow tasks to all run
+      (Thread/sleep 500)
+      (is (= @running-total 45)))))
