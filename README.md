@@ -2,6 +2,14 @@
 
 A Clojure library designed to create a simple to use task pool. The level of parallelism specified at the creation of the pool controls how many threads are used to process tasks.
 
+## Installation
+
+`clj-taskpool` is available from [Clojars](https://clojars.org/clj-taskpool):
+
+```
+[clj-taskpool "0.1.0-SNAPSHOT"]
+```
+
 ## Usage
 
 Include the namespace with something like:
