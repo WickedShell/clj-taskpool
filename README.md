@@ -60,7 +60,7 @@ my-pool-7 finished 12
 my-pool-3 finished 9
 ```
 
-Notice that tasks are run as soon as they are submitted, you don't need to prompt the pool to check for any new tasks.
+Notice that tasks are run as soon as they are submitted, you don't need to prompt the pool to check for any new tasks. Duplicate tasks (either not yet begun, or currently being processed) will be discarded. Once a task has completed it could be added to the pool again.
 
 Rather then submitting tasks one at a time, a `set` of additional tasks can be added instead.
 
@@ -111,6 +111,6 @@ This will automatically remove all pending tasks, and stop all the threads in th
 
 ## License
 
-Copyright © 2016 Michael du Breuil
+Copyright © 2017 Michael du Breuil
 
 Distributed under the Eclipse Public License either version 1.0 or (at your option) any later version.
