@@ -108,3 +108,31 @@
       ; allow tasks to all run
       (Thread/sleep 500)
       (is (= @running-total 45)))))
+
+(deftest test-worker-duplicate-tasks
+  (testing "Adding a duplicate task item should only be run once if the other is still pending"
+    (let [running-total (atom 0)
+          pool (create-worker-pool 1 (fn [swap-fn] (Thread/sleep 1000) (swap! running-total swap-fn)))]
+      (add-task pool inc)
+      (Thread/sleep 250)
+      (add-task pool inc)
+      (Thread/sleep 3000)
+      (is (= @running-total 1)))))
+
+
+(deftest test-worker-duplicate-tasks-set
+  (testing "Adding a duplicate task item should only be run once if the other is still pending, added via a set."
+    ; create a single threaded pool, post a inc/dec to the pool, then post a second pair before the first pair have run
+    (let [running-total (atom 0)
+          pool (create-worker-pool 1 (fn [swap-fn] (Thread/sleep 1000) (swap! running-total swap-fn)))]
+      (add-task pool #{inc dec})
+      (Thread/sleep 250)
+      (add-task pool #{inc dec})
+      (Thread/sleep 3000)
+      (is (= @running-total 0))
+      (add-task pool #{inc dec #(+ 2 %)})
+      (Thread/sleep 250)
+      (add-task pool #{dec #(+ 2 %)})
+      (Thread/sleep 5000)
+      ; note that the anonymous functions are distinct from eachother and as such will be added a second time
+      (is (= @running-total 4)))))
