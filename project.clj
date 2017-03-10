@@ -1,4 +1,4 @@
-(defproject clj-taskpool "0.1.0-SNAPSHOT"
+(defproject clj-taskpool "0.1.0"
   :description "Simple parallel task pool."
   :url "https://github.com/wickedshell/clj-taskpool"
   :license {:name "Eclipse Public License"
